@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mohamed Salah | Portfolio Génie Logiciel</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mediaqueries.css" />
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    /* Styles de la popup vidéo existante */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .popup.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .popup-container {
+      background: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      transition: background 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: var(--accent-color);
+    }
+
+    .video-container {
+      width: 100%;
+      aspect-ratio: 16/9;
+    }
+
+    .popup-video {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .popup-footer {
+      padding: 20px;
+      background: var(--background-color);
+      color: var(--primary-text);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .popup-footer h3 {
+      margin-top: 0;
+      color: var(--accent-color);
+      font-size: 1.4rem;
+    }
+
+    .popup-footer p {
+      margin: 0;
+      color: var(--secondary-text);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .popup-container {
+        width: 95%;
+      }
+    }
+
+    .article-container {
+      position: relative;
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      aspect-ratio: 16/9;
+      /* Modifié pour s'adapter à l'image du nouveau projet */
+    }
+
+    .article-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 122, 204, 0.15);
+    }
+
+    /* Styles pour la nouvelle galerie d'images (KizunAi) */
+    .project-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Style spécifique pour la vignette KizunAi, utilisez le ratio vertical d'une des images */
+    .article-container.kizunai {
+      aspect-ratio: 9/16;
+      /* Ratio portrait pour la vignette */
+      max-width: 300px;
+      /* Limite la largeur de la vignette sur desktop */
+      margin: auto;
+      /* Centre la vignette */
+    }
+
+    .kizunai-popup-container {
+      background: var(--card-background);
+      border-radius: 15px;
+      width: 95%;
+      max-width: 1000px;
+      /* Plus large pour la galerie */
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kizunai-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      padding-top: 15px;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item img:hover {
+      transform: scale(1.02);
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .article-container:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-overlay svg {
+      fill: white;
+      opacity: 0.9;
+    }
+
+    /* Remplacer l'icône 'play' par une icône 'view' pour KizunAi */
+    .article-container.kizunai .play-overlay svg {
+      fill: white;
+      width: 48px;
+      height: 48px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav id="desktop-nav">
+    <div class="logo">Mohamed Salah.</div>
+    <div>
+      <ul class="nav-links">
+        <li><a href="#about">À propos</a></li>
+        <li><a href="#experience">Expérience</a></li>
+        <li><a href="#skills">Compétences</a></li>
+        <li><a href="#projects">Projets</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <nav id="hamburger-nav">
+    <div class="logo">Mohamed Salah.</div>
+    <div class="hamburger-menu">
+      <div class="hamburger-icon" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="menu-links">
+        <li><a href="#about" onclick="toggleMenu()">À propos</a></li>
+        <li><a href="#experience" onclick="toggleMenu()">Expérience</a></li>
+        <li><a href="#skills" onclick="toggleMenu()">Compétences</a></li>
+        <li><a href="#projects" onclick="toggleMenu()">Projets</a></li>
+        <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+      </div>
+    </div>
+  </nav>
+
+  <section id="profile">
+    <div class="section__pic-container">
+      <img src="./assets/profile-pic.png" class="imgpic" alt="Photo de profil de Mohamed Salah" />
+    </div>
+    <div class="section__text">
+      <p class="section__text__p1">Je me présente, je suis</p>
+      <h1 class="title">Mohamed Salah Mani</h1>
+      <p class="section__text__p2">Génie logiciel</p>
+      <p class="section__text__p1" style="font-style: italic; margin-bottom: 2rem;">
+        Passionné par l’Intelligence Artificielle, la Data Science et le développement logiciel </p>
+      <div class="btn-container">
+        <button class="btn btn-color-2" onclick="window.open('./assets/Mohamed salah Mani.pdf')">
+          Télécharger CV
+        </button>
+        <button class="btn btn-color-1" onclick="location.href='./#contact'">
+          Infos Contact
+        </button>
+      </div>
+      <div id="socials-container">
+        <img src="./assets/linkedin.png" alt="Mon profil LinkedIn" class="icon"
+          onclick="location.href='https://www.linkedin.com/in/mohamedsalahmani/'" />
+        <img src="./assets/github.png" alt="Mon profil Github" class="icon"
+          onclick="location.href='https://github.com/MohamedSalah977'" />
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <p class="section__text__p1">En savoir plus</p>
+    <h1 class="title">À propos de moi</h1>
+    <br>
+    <div class="section-container">
+      <div class="section__pic-container">
+        <img src="./assets/about-pic.jpg" alt="Photo de profil" class="about-pic" />
+      </div>
+      <div class="about-details-container">
+        <div class="about-containers">
+          <div class="details-container">
+            <div style="text-align: center;">
+              <img src="./assets/experience.png" alt="Icône expérience" class="icon" />
+              <h3>Expérience</h3>
+            </div>
+            <ul style="padding: 5%">
+              <li>
+                <h4>Stagiaire | Juillet - Août 2025</h4>
+                <p>Institut Supérieur des Technologies de l’Information et de la Communication (ISTIC Borj Cédria), en
+                  collaboration avec l’Université d’Aizu (Japon)</p>
+              </li>
+
+              <li>
+                <h4>Stagiaire | Juin 2024</h4>
+                <p>Office National de l’Assainissement (ONAS)</p>
+              </li>
+<li>
+                <h4>Application mobile :  KizunAi | 2025 :</h4>
+                <p>Application éducative alimentée par l’intelligence artificielle pour accompagner les étudiants et rendre chaque cours plus engageant. </p>
+              </li>
+              <li>
+                <h4>Projet web full stack | 2025 :</h4>
+                <p>Application de gestion des tâches pour la communauté universitaire (Angular, J2EE).</p>
+              </li>
+              <li>
+                <h4>Projet d'indexation vidéo IA | 2025 :</h4>
+                <p>Système de détection d'objets (YOLOv8) et de transcription audio (Whisper).</p>
+              </li>
+              <li>
+                <h4>Implémentation d'IBM Granite Model | 2025 :</h4>
+                <p>Utilisation des modèles IBM Granite pour la génération de code, la classification et le résumé de
+                  données.</p>
+              </li>
+              <li>
+                <h4>Portfolio Personnel | 2025 :</h4>
+                <p>Conception et développement de mon portfolio (HTML, CSS, JS).</p>
+              </li>
+              <br>
+              <li>
+                <h4>Bénévolat :</h4>
+                <ul>
+                  <li><strong>IEEE:</strong> Institute of Electrical and Electronics Engineers.</li>
+                  <li><strong>Visualize Club :</strong> Trésorier du club.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="details-container">
+            <div style="text-align: center;">
+              <img src="./assets/education.png" alt="Icône éducation" class="icon" />
+              <h3>Éducation et certifications</h3>
+            </div>
+            <ul style="padding: 5%">
+              <li>
+                <h4>Licence en génie logiciel | 2023-2026 :</h4>
+                <p>L'Institut Supérieur des Technologies de l'Information et de la Communication (Borj Cédria)</p>
+              </li>
+              <li>
+               <h4>Certification IBM : Data Fundamentals | 2025 :</h4>
+<p>Connaissance des <strong>concepts analytiques</strong>, des méthodologies et des applications de la <strong>science des données</strong>, ainsi que des outils et langages de programmation utilisés dans l’écosystème des données.</p>              </li>
+              <li>
+                <h4>Certification ISTQB | 2025 :</h4>
+                <p>Tests de logiciels niveau fondation.</p>
+              </li>
+              <li>
+                <h4>Certification NVIDIA | 2025 :</h4>
+                <p>Fondamentaux du Deep Learning et Machine Learning.</p>
+              </li>
+              <li>
+                <h4>Certification IBM : Granite models | 2025 :</h4>
+                <p>Fondamentaux de l'intelligence artificielle, Classification & Résumé de données avec Granite,
+                  Génération & Optimisation de code avec Granite.</p>
+              </li>
+            </ul>
+            <p style="text-align: center; margin-top: 1rem;"><a
+                href="https://www.credly.com/users/mohamed-salah-mani"><img src="assets/credly.png" alt="Credly"
+                  class="icon" style="height: 3rem; filter: none;"></a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <img src="./assets/arrow.png" alt="Icône flèche" class="icon arrow" onclick="location.href='./#experience'" />
+  </section>
+
+  <section id="experience">
+    <p class="section__text__p1">Découvrez mon</p>
+    <h1 class="title">Expérience</h1>
+    <div class="section-container">
+      <div class="experience-details-container">
+        <div class="about-containers">
+          <div class="details-container">
+            <ul style="padding: 5%">
+              <li>
+                <h4>Stage | Juillet - Août 2025 : ISTIC Borj Cédria (en collaboration avec AIZU, Japon)</h4>
+                <ul>
+                  <li>Conçu et développé l’application "KizunAi" (<strong>Flutter/Django</strong>).</li>
+                  <li>Intégré des fonctionnalités interactives (AI, Quiz, Feedback...) pour améliorer l’apprentissage en classe.</li>
+                  <li>Implémenté <strong>Ollama</strong> pour la génération automatique de quiz.</li>
+                  <li>Utilisé <strong>Groq API</strong> pour l’analyse des sentiments à partir des feedbacks des
+                    étudiants.</li>
+                  <li>Mis en place la vérification des emails avec <strong>Supabase</strong> pour sécuriser les comptes
+                    utilisateurs.</li>
+                </ul>
+              </li>
+
+              <li>
+                <h4>Stage | Juin 2024 : Office National de l'Assainissement (ONAS)</h4>
+                <ul>
+                  <li>Assisté à la conception d'applications web internes et à la gestion de bases de données.</li>
+                  <li>Effectué la configuration réseau, la maintenance et la réparation de matériel informatique.</li>
+                  <li>Découvert et configuré des firewalls pour sécuriser les réseaux.</li>
+                </ul>
+              </li>
+              <br>
+
+              <li>
+                <h4>Projet web full stack | 2025 : Gestion des tâches universitaire (IEEE)</h4>
+                <p>Application pour automatiser et faciliter les tâches de la communauté universitaire.</p>
+                <ul>
+                  <li>Conception UX/UI (Figma).</li>
+                  <li>Développement Front-end (Angular, Bootstrap, HTML, CSS, TypeScript).</li>
+                  <li>Développement Back-end (J2EE, MySQL, WildFly).</li>
+                  <li>Méthodologie : Méthodologie Agile, Scrum.</li>
+                </ul>
+              </li>
+              <br>
+
+              <li>
+                <h4>Projet d'indexation vidéo IA | 2025 :</h4>
+                <p>Système d'indexation vidéo intelligent basé sur la détection d'objets et la transcription audio.</p>
+                <ul>
+                  <li>Implémenté <strong>YOLOv8</strong> pour la détection d'objets dans les vidéos.</li>
+                  <li>Utilisé <strong>Whisper d'OpenAI</strong> pour la transcription automatique de l'audio.</li>
+                  <li>Indexé automatiquement les fichiers en fonction des objets détectés et des paroles transcrites.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+
+          <div class="details-container">
+  <ul style="padding: 5%">
+    <li>
+      <h4>Implémentation d'IBM Granite Model | 2025 :</h4>
+      <p>Projet : AI-Powered Customer Review Analysis & Meeting Summarization</p>
+      <ul>
+        <li>Outils : <strong>IBM Granite</strong>, <strong>Replicate API</strong>, <strong>Google Colab</strong>, <strong>Python</strong>, <strong>LangChain</strong>.</li>
+      </ul>
+    </li>
+    <br>
+
+    <li>
+      <h4>Portfolio Personnel | 2025 :</h4>
+      <ul>
+        <li>Développé en <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong>.</li>
+        <li>Déployé et géré sur <strong>GitHub</strong>.</li>
+      </ul>
+    </li>
+    <br>
+
+    <li>
+      <h4>Bénévolat :</h4>
+      <ul>
+        <li><strong>IEEE</strong>: Participation à des hackathons et formations en programmation.</li>
+        <li><strong>Visualize Club</strong> : Trésorier, gestion financière.</li>
+        <li>Actions humanitaires : Participation aux opérations "Hiver au chaud" et "Kofet Romdhane".</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+        </div>
+      </div>
+    </div>
+    <img src="./assets/arrow.png" alt="Icône flèche" class="icon arrow" onclick="location.href='./#skills'" />
+  </section>
+
+  <section id="skills">
+    <p class="section__text__p1">Découvrez mes</p>
+    <h1 class="title">Compétences</h1>
+    <div class="skills-container">
+
+      <div class="skill">
+        <i class='bx bx-desktop skill-icon'></i>
+        <h3>Frontend</h3>
+        <p>Flutter, Angular, TypeScript, Bootstrap, Conception UI/UX responsive</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-server skill-icon'></i>
+        <h3>Backend</h3>
+        <p>Supabase, J2EE, MySQL, PL/SQL, REST APIs</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-line-chart skill-icon'></i>
+        <h3>Data Science & Big Data</h3>
+        <p>Analyse et visualisation de données, Big Data, Data Warehouse, BI Reporting & Dashboards</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-brain skill-icon'></i>
+        <h3>Intelligence Artificielle</h3>
+        <p>Machine Learning, Deep Learning, YOLOv8, Whisper, IBM Granite, Création de prompts précis, Modélisation et
+          déploiement de modèles IA</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-code-alt skill-icon'></i>
+        <h3>Langages de programmation</h3>
+        <p>Java (POO), Python, SQL, JavaScript</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-cog skill-icon'></i>
+        <h3>Outils et Méthodologies</h3>
+        <p>GitHub, Docker, Méthodologie Agile, Scrum</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-user-voice skill-icon'></i>
+        <h3>Soft Skills</h3>
+        <p>Résolution de problèmes, Communication efficace, Collaboration transverse</p>
+      </div>
+
+      <div class="skill">
+        <i class='bx bx-globe skill-icon'></i>
+        <h3>Langues</h3>
+        <p>Français, Anglais, Arabe</p>
+      </div>
+
+    </div>
+    <img src="./assets/arrow.png" alt="Icône flèche" class="icon arrow" onclick="location.href='./#projects'" />
+  </section>
+
+
+  <section id="projects">
+    <p class="section__text__p1">Découvrez mes récents</p>
+    <h1 class="title">Projets</h1>
+    <div class="experience-details-container">
+      <div class="about-containers">
+        <div class="details-container color-container">
+          <div class="article-container" onclick="openPopup('project1')">
+            <video src="assets/project1.mp4" class="project-img" autoplay loop muted playsinline></video>
+            <div class="play-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+          <h2 class="experience-sub-title project-title">Projet web full stack | 2025</h2>
+        </div>
+        <div class="details-container color-container">
+          <div class="article-container kizunai" onclick="openKizunAiGallery()">
+            <img src="project/image copy 7.png" class="project-img" alt="Vignette du projet KizunAi" />
+            <div class="play-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px">
+                <path
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 13c-3.03 0-5.5-2.47-5.5-5.5S8.97 6.5 12 6.5s5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5zm0-9c-1.93 0-3.5 1.57-3.5 3.5s1.57 3.5 3.5 3.5 3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5z" />
+              </svg>
+            </div>
+          </div>
+          <h2 class="experience-sub-title project-title">Projet KizunAi | 2025</h2>
+        </div>
+        <div class="details-container color-container">
+          <div class="article-container" onclick="openPopup('project2')">
+            <video src="assets/project2.mp4" class="project-img" autoplay loop muted playsinline></video>
+            <div class="play-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+          <h2 class="experience-sub-title project-title">Projet AI (YOLOv8) | 2025</h2>
+        </div>
+
+        <div id="videoPopup" class="popup">
+          <div class="popup-overlay" onclick="closePopup()"></div>
+          <div class="popup-container">
+            <button class="close-btn" onclick="closePopup()" aria-label="Fermer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+            </button>
+            <div class="video-container">
+              <video id="popupVideo" controls autoplay class="popup-video"></video>
+            </div>
+            <div class="popup-footer">
+              <h3 id="popupTitle">Titre du projet</h3>
+              <p id="popupDescription">Description du projet</p>
+            </div>
+          </div>
+        </div>
+       <div id="kizunaiGallery" class="popup">
+          <button class="close-btn" onclick="closeKizunAiGallery()" aria-label="Fermer la galerie">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+          
+          <div class="kizunai-popup-container">
+            <div class="popup-footer" style="padding: 10px 0 20px 0; border: none;">
+              <h3 style="text-align: center;">KizunAi : Application d'apprentissage interactif (Flutter/Django)</h3>
+              <p style="text-align: center; font-size: 1rem;">Juillet - Août 2025 | Stage ISTIC Borj Cédria (AIZU,
+                Japon)</p>
+            </div>
+            <div class="kizunai-gallery">
+              <div class="gallery-item"><img src="project/image copy 5.png" alt="Écran de connexion" loading="lazy">
+              </div>
+              <div class="gallery-item"><img src="project/image copy 6.png" alt="Écran d'inscription" loading="lazy">
+              </div>
+              <div class="gallery-item"><img src="project/image copy 7.png" alt="Tableau de bord professeur - Aperçu"
+                  loading="lazy"></div>
+              <div class="gallery-item"><img src="project/image copy 2.png" alt="Classement des professeurs"
+                  loading="lazy"></div>
+              <div class="gallery-item"><img src="project/image copy 9.png" alt="Générateur de quiz IA" loading="lazy">
+              </div>
+              <div class="gallery-item"><img src="project/image copy 3.png" alt="Analyse de feedback IA" loading="lazy">
+              </div>
+              <div class="gallery-item"><img src="project/image copy 11.png" alt="Tableau de bord - Taux de réussite"
+                  loading="lazy"></div>
+              <div class="gallery-item"><img src="project/image copy 12.png" alt="Tableau de bord - Taux de réussite"
+                  loading="lazy"></div>
+
+            </div>
+          </div>
+        </div>
+        <script>
+          const projects = {
+            project1: {
+              videoSrc: "assets/project1.mp4",
+              title: "Projet web full stack",
+              description: "2025 | Développement Front-end & Back-end"
+            },
+            project2: {
+              videoSrc: "assets/project2.mp4",
+              title: "Projet AI (YOLOv8) | 2025",
+              description: "Système d'indexation vidéo intelligent"
+            }
+          };
+
+          // --- Fonctions pour la popup vidéo existante ---
+          function openPopup(projectId) {
+            const project = projects[projectId];
+            if (!project) return;
+
+            const popup = document.getElementById('videoPopup');
+            const video = document.getElementById('popupVideo');
+            const title = document.getElementById('popupTitle');
+            const description = document.getElementById('popupDescription');
+
+            video.src = project.videoSrc;
+            title.textContent = project.title;
+            description.textContent = project.description;
+
+            popup.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            video.load();
+            video.play().catch(e => console.log("Erreur de lecture:", e));
+          }
+
+          function closePopup() {
+            const popup = document.getElementById('videoPopup');
+            const video = document.getElementById('popupVideo');
+
+            popup.classList.remove('active');
+            document.body.style.overflow = '';
+
+            video.pause();
+            video.currentTime = 0;
+          }
+
+          // --- Nouvelles fonctions pour la galerie KizunAi ---
+          function openKizunAiGallery() {
+            const gallery = document.getElementById('kizunaiGallery');
+            gallery.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          }
+
+          function closeKizunAiGallery() {
+            const gallery = document.getElementById('kizunaiGallery');
+            gallery.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+
+          // --- Gestion des événements clavier pour fermer les deux popups ---
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+              closePopup(); // Ferme la popup vidéo si ouverte
+              closeKizunAiGallery(); // Ferme la galerie si ouverte
+            }
+          });
+        </script>
+      </div>
+    </div>
+    <img src="./assets/arrow.png" alt="Icône flèche" class="icon arrow" onclick="location.href='./#contact'" />
+  </section>
+
+  <section id="contact">
+    <p class="section__text__p1">Intéressé ?</p>
+    <h1 class="title">Contactez-moi</h1>
+    <div class="contact-info-upper-container">
+      <div class="contact-info-container">
+        <img src="./assets/email.png" alt="Icône email" class="icon contact-icon email-icon" />
+        <p><a href="mailto:manimedsalah@gmail.com">manimedsalah@gmail.com</a></p>
+      </div>
+      <div class="contact-info-container">
+        <img src="./assets/linkedin.png" alt="Icône LinkedIn" class="icon contact-icon" />
+        <p><a href="https://www.linkedin.com/in/mohamedsalahmani/">LinkedIn</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <nav>
+      <div class="nav-links-container">
+        <ul class="nav-links">
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#experience">Expérience</a></li>
+          <li><a href="#skills">Compétences</a></li>
+          <li><a href="#projects">Projets</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+    <p>Copyright &#169; 2025 Mohamed Salah. Tous droits réservés.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+
+</html>

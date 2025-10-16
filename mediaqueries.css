@@ -1,0 +1,187 @@
+@media screen and (max-width: 1400px) {
+  #profile {
+    height: 83vh;
+    margin-bottom: 6rem;
+  }
+  .about-containers {
+    flex-wrap: wrap;
+  }
+  #contact,
+  #projects {
+    height: fit-content;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  /* NAV */
+  #desktop-nav {
+    display: none;
+  }
+  #hamburger-nav {
+    display: flex;
+  }
+  nav {
+    border-bottom: none;
+  }
+  
+  /* SECTIONS */
+  #experience,
+  .experience-details-container {
+    margin-top: 2rem;
+  }
+  #profile,
+  .section-container {
+    display: block;
+  }
+  .arrow {
+    display: none;
+  }
+  section,
+  .section-container {
+    height: fit-content;
+  }
+  section {
+    margin: 0 5%;
+    padding: 6vh 0 4vh 0;
+  }
+  
+  /* PROFILE */
+  #profile {
+    height: fit-content;
+    padding-top: 10vh;
+  }
+  .section__pic-container {
+    width: 250px;
+    height: 250px;
+    margin: 0 auto 2rem;
+  }
+  
+  /* ABOUT */
+  .about-containers {
+    margin-top: 0;
+  }
+
+  .section__text__p1 {
+    font-size: 1rem;
+    /* Règle ajoutée ici pour le centrage global des sous-titres */
+    text-align: center; 
+  }
+
+  .title {
+    font-size: 2.5rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* SECTIONS */
+  section {
+    margin: 0 2%;
+  }
+
+  /* FIX 1: CENTRAGE DU SOUS-TITRE */
+  /* On s'assure que cette règle prend le dessus sur mobile */
+  .section__text__p1 {
+    text-align: center; 
+  }
+
+  /* PROFILE */
+  #profile {
+    gap: 3rem;
+  }
+  .section__text__p2 {
+    font-size: 1.25rem;
+  }
+  .title {
+    font-size: 2rem;
+  }
+
+  /* BUTTONS */
+  .btn {
+    min-width: 8rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  .btn-container {
+      /* Ajouté pour bien centrer les boutons sur mobile */
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+  }
+
+
+  /* SKILLS GRID */
+  .skills-container {
+    grid-template-columns: 1fr; 
+    gap: 1.5rem;
+  }
+  .skill {
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  /* ABOUT/EXPERIENCE */
+  .about-containers {
+    flex-direction: column; /* Force l'empilement vertical */
+    gap: 1.5rem; /* Ajuste l'espace entre les éléments empilés */
+  }
+  
+  .details-container {
+    padding: 1.2rem;
+    width: 100%; /* S'assure qu'ils prennent toute la largeur du parent */
+  }
+  .details-container h3 {
+    font-size: 1.1rem;
+  }
+  .about-pic {
+    width: 100%;
+    height: auto;
+  }
+  .section__pic-container {
+    width: 60%;
+    height: auto;
+    max-width: 300px;
+  }
+  
+  /* CONTACT */
+  #contact,
+  footer {
+    height: fit-content;
+  }
+  .contact-info-upper-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  .contact-info-container {
+    margin: 0.5rem 0;
+  }
+  .contact-info-container p {
+    font-size: 1rem;
+  }
+
+  .nav-links-container {
+    /* S'assure que le conteneur prend de la place et centre */
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .nav-links {
+    /* Change la direction pour empiler, puis centre */
+    flex-direction: column; 
+    gap: 0.5rem;
+    align-items: center; 
+    display: flex; /* Maintient le flex pour align-items */
+    padding: 0;
+  }
+  
+  .nav-links li {
+    padding: 0;
+  }
+
+  .nav-links li a {
+    font-size: 1rem;
+  }
+   footer nav {
+    display: none; /* Masque la navigation du footer sur mobile */
+    margin-bottom: 0;
+  }
+}
